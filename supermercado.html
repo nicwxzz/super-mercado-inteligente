@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema de Supermercado</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #f5f4f0;
+      --surface:      #ffffff;
+      --surface2:     #f0efe9;
+      --border:       rgba(0,0,0,0.08);
+      --border-md:    rgba(0,0,0,0.13);
+      --text:         #1a1a18;
+      --text-sec:     #6b6b66;
+      --text-hint:    #a8a8a2;
+      --green:        #2a7a4b;
+      --green-bg:     #eaf4ee;
+      --green-border: rgba(42,122,75,0.3);
+      --red:          #a32d2d;
+      --red-bg:       #fcebeb;
+      --radius:       10px;
+      --radius-lg:    14px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ─────────────────────────────── */
+    header {
+      background: var(--surface);
+      border-bottom: 0.5px solid var(--border-md);
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--green);
+      border-radius: 50%;
+    }
+
+    .header-info {
+      font-size: 12px;
+      color: var(--text-hint);
+      font-family: 'DM Mono', monospace;
+    }
+
+    /* ── Layout ──────────────────────────────── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 16px;
+      align-items: start;
+    }
+
+    /* ── Panel ───────────────────────────────── */
+    .panel {
+      background: var(--surface);
+      border: 0.5px solid var(--border-md);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 14px 20px;
+      border-bottom: 0.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-sec);
+    }
+
+    .panel-body { padding: 20px; }
+
+    /* ── Badge ───────────────────────────────── */
+    .badge {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: var(--green-bg);
+      color: var(--green);
+      border: 0.5px solid var(--green-border);
+    }
+
+    /* ── Catalog ─────────────────────────────── */
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 10px;
+    }
+
+    .product-card {
+      background: var(--surface2);
+      border: 0.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: border-color 0.15s, transform 0.1s, background 0.15s;
+      user-select: none;
+    }
+
+    .product-card:hover  { border-color: var(--green-border); background: var(--green-bg); }
+    .product-card:active { transform: scale(0.96); }
+
+    .product-icon  { font-size: 26px; line-height: 1; }
+    .product-name  { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.3; }
+    .product-price { font-size: 12px; color: var(--text-sec); font-family: 'DM Mono', monospace; }
+
+    /* ── Cart ────────────────────────────────── */
+    .cart-panel {
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 72px;
+    }
+
+    .cart-items {
+      padding: 12px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-height: 180px;
+    }
+
+    .cart-empty {
+      text-align: center;
+      color: var(--text-hint);
+      font-size: 13px;
+      padding: 2rem 0;
+      margin: auto;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      background: var(--surface2);
+      border-radius: var(--radius);
+      border: 0.5px solid var(--border);
+      animation: slideIn 0.15s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .cart-item-left  { display: flex; align-items: center; gap: 8px; }
+    .cart-item-icon  { font-size: 18px; line-height: 1; }
+    .cart-item-name  { font-size: 13px; font-weight: 500; }
+    .cart-item-price { font-size: 12px; color: var(--text-sec); font-family: 'DM Mono', monospace; }
+
+    .cart-item-remove {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-hint);
+      font-size: 15px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      line-height: 1;
+      transition: background 0.1s, color 0.1s;
+    }
+
+    .cart-item-remove:hover { background: var(--red-bg); color: var(--red); }
+
+    .cart-footer {
+      border-top: 0.5px solid var(--border);
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .total-row   { display: flex; justify-content: space-between; align-items: baseline; }
+    .total-label { font-size: 13px; color: var(--text-sec); }
+
+    .total-value {
+      font-size: 24px;
+      font-weight: 600;
+      font-family: 'DM Mono', monospace;
+      transition: color 0.2s;
+    }
+
+    .pay-btn {
+      background: var(--green);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 13px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+
+    .pay-btn:hover:not(:disabled)  { opacity: 0.88; }
+    .pay-btn:active:not(:disabled) { transform: scale(0.98); }
+    .pay-btn:disabled              { opacity: 0.35; cursor: not-allowed; }
+
+    /* ── Modal ───────────────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 0.5px solid var(--border-md);
+      padding: 24px;
+      width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      animation: popIn 0.18s ease;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-title       { font-size: 16px; font-weight: 600; }
+    .modal-total-label { font-size: 12px; color: var(--text-sec); margin-bottom: 4px; }
+
+    .modal-total-value {
+      font-size: 32px;
+      font-weight: 600;
+      font-family: 'DM Mono', monospace;
+    }
+
+    .input-label { font-size: 12px; color: var(--text-sec); margin-bottom: 6px; display: block; }
+
+    .money-input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 0.5px solid var(--border-md);
+      border-radius: var(--radius);
+      font-size: 18px;
+      font-family: 'DM Mono', monospace;
+      color: var(--text);
+      background: var(--surface2);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .money-input:focus { border-color: var(--green); }
+
+    .error-msg {
+      font-size: 12px;
+      color: var(--red);
+      margin-top: 4px;
+      min-height: 16px;
+    }
+
+    .modal-actions { display: flex; gap: 8px; }
+
+    .btn-cancel {
+      flex: 1;
+      padding: 11px;
+      border-radius: var(--radius);
+      border: 0.5px solid var(--border-md);
+      background: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      color: var(--text-sec);
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+
+    .btn-cancel:hover { background: var(--surface2); }
+
+    .btn-confirm {
+      flex: 1;
+      padding: 11px;
+      border-radius: var(--radius);
+      border: none;
+      background: var(--green);
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .btn-confirm:hover:not(:disabled) { opacity: 0.88; }
+    .btn-confirm:disabled             { opacity: 0.35; cursor: not-allowed; }
+
+    /* ── Receipt ─────────────────────────────── */
+    .receipt {
+      background: var(--surface2);
+      border-radius: var(--radius);
+      border: 0.5px solid var(--border);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .receipt-row        { display: flex; justify-content: space-between; font-size: 13px; }
+    .receipt-row .rk    { color: var(--text-sec); }
+    .receipt-row .rv    { font-weight: 500; font-family: 'DM Mono', monospace; }
+    .receipt-divider    { height: 0.5px; background: var(--border-md); }
+
+    .receipt-change-row     { display: flex; justify-content: space-between; font-size: 14px; }
+    .receipt-change-row .rk { font-weight: 600; }
+    .receipt-change-row .rv { font-family: 'DM Mono', monospace; font-weight: 600; font-size: 16px; color: var(--green); }
+
+    .breakdown-title {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-hint);
+      margin-top: 4px;
+    }
+
+    .breakdown-item { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-sec); }
+
+    .btn-new {
+      width: 100%;
+      padding: 12px;
+      border-radius: var(--radius);
+      border: none;
+      background: var(--green);
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .btn-new:hover { opacity: 0.88; }
+
+    @media (max-width: 700px) {
+      main { grid-template-columns: 1fr; }
+      .cart-panel { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-dot" aria-hidden="true"></div>
+    SuperMarket System
+  </div>
+  <span class="header-info" aria-label="Versão do sistema">v2.0 — Java Backend Ready</span>
+</header>
+
+<main>
+  <section class="panel" aria-label="Catálogo de produtos">
+    <div class="panel-header">
+      <span class="panel-title">Catálogo de produtos</span>
+    </div>
+    <div class="panel-body">
+      <div class="catalog-grid" id="catalog-grid" role="list"></div>
+    </div>
+  </section>
+
+  <section class="panel cart-panel" aria-label="Carrinho de compras">
+    <div class="panel-header">
+      <span class="panel-title">Carrinho</span>
+      <span class="badge" id="cart-badge" aria-live="polite" aria-atomic="true">0 itens</span>
+    </div>
+    <div class="cart-items" id="cart-items" role="list" aria-label="Itens no carrinho"></div>
+    <div class="cart-footer">
+      <div class="total-row">
+        <span class="total-label">Total</span>
+        <span class="total-value" id="cart-total" aria-live="polite">R$ 0,00</span>
+      </div>
+      <button class="pay-btn" id="pay-btn" disabled aria-label="Finalizar compra">
+        Finalizar compra
+      </button>
+    </div>
+  </section>
+</main>
+
+<div
+  class="modal-overlay"
+  id="modal-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="modal-heading"
+  aria-hidden="true"
+>
+  <div class="modal">
+
+    <div id="view-checkout">
+      <p class="modal-title" id="modal-heading">Finalizar compra</p>
+      <div>
+        <p class="modal-total-label">Total a pagar</p>
+        <p class="modal-total-value" id="modal-total" aria-live="polite"></p>
+      </div>
+      <div>
+        <label class="input-label" for="received-input">Valor recebido (R$)</label>
+        <input
+          type="number"
+          id="received-input"
+          class="money-input"
+          min="0"
+          step="0.01"
+          placeholder="0.00"
+          aria-describedby="error-msg"
+          autocomplete="off"
+        />
+        <p class="error-msg" id="error-msg" role="alert" aria-live="assertive"></p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="btn-cancel">Cancelar</button>
+        <button class="btn-confirm" id="btn-confirm" disabled>Confirmar</button>
+      </div>
+    </div>
+
+    <div id="view-receipt" hidden>
+      <p class="modal-title">Compra finalizada ✓</p>
+      <div class="receipt" id="receipt-content" aria-live="polite"></div>
+      <button class="btn-new" id="btn-new-sale">Novo atendimento</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* ─────────────────────────────────────────────────────────────────────────
+   1. DADOS
+   Preços armazenados em CENTAVOS (inteiros) — elimina erros de ponto flutuante.
+   Estrutura idêntica ao que uma API Java retornaria via JSON.
+   ───────────────────────────────────────────────────────────────────────── */
+
+const PRODUCTS = [
+  { id: 1,  name: 'Arroz',    priceCents: 1250, icon: '🌾' },
+  { id: 2,  name: 'Feijão',   priceCents:  890, icon: '🫘' },
+  { id: 3,  name: 'Óleo',     priceCents:  600, icon: '🫙' },
+  { id: 4,  name: 'Café',     priceCents: 1500, icon: '☕' },
+  { id: 5,  name: 'Açúcar',   priceCents:  425, icon: '🍬' },
+  { id: 6,  name: 'Leite',    priceCents:  550, icon: '🥛' },
+  { id: 7,  name: 'Pão',      priceCents:  700, icon: '🍞' },
+  { id: 8,  name: 'Manteiga', priceCents:  990, icon: '🧈' },
+  { id: 9,  name: 'Macarrão', priceCents:  480, icon: '🍝' },
+  { id: 10, name: 'Sal',      priceCents:  250, icon: '🧂' },
+  { id: 11, name: 'Ovos',     priceCents: 1390, icon: '🥚' },
+  { id: 12, name: 'Queijo',   priceCents: 1850, icon: '🧀' },
+];
+
+const DENOMINATIONS = [
+  { cents: 10000, label: 'Nota de R$ 100,00' },
+  { cents:  5000, label: 'Nota de R$ 50,00'  },
+  { cents:  2000, label: 'Nota de R$ 20,00'  },
+  { cents:  1000, label: 'Nota de R$ 10,00'  },
+  { cents:   500, label: 'Nota de R$ 5,00'   },
+  { cents:   200, label: 'Nota de R$ 2,00'   },
+  { cents:   100, label: 'Moeda de R$ 1,00'  },
+  { cents:    50, label: 'Moeda de R$ 0,50'  },
+  { cents:    25, label: 'Moeda de R$ 0,25'  },
+  { cents:    10, label: 'Moeda de R$ 0,10'  },
+  { cents:     5, label: 'Moeda de R$ 0,05'  },
+  { cents:     1, label: 'Moeda de R$ 0,01'  },
+];
+
+/* ─────────────────────────────────────────────────────────────────────────
+   2. STORE — estado centralizado e previsível
+   Padrão pub/sub: quem quiser reagir a mudanças chama store.subscribe(fn).
+   O estado (_cart) é privado — ninguém acessa diretamente.
+   ───────────────────────────────────────────────────────────────────────── */
+
+const store = (() => {
+  let _cart      = [];
+  let _nextId    = 1;
+  const _listeners = new Set();
+
+  const notify = () => _listeners.forEach(fn => fn());
+
+  return {
+    subscribe:     (fn) => _listeners.add(fn),
+    getCart:       ()   => [..._cart],
+    getTotalCents: ()   => _cart.reduce((sum, item) => sum + item.product.priceCents, 0),
+
+    addItem(productId) {
+      const product = PRODUCTS.find(p => p.id === productId);
+      if (!product) return;
+      _cart = [..._cart, { product, cartItemId: _nextId++ }];
+      notify();
+    },
+
+    removeItem(cartItemId) {
+      _cart = _cart.filter(item => item.cartItemId !== cartItemId);
+      notify();
+    },
+
+    clearCart() {
+      _cart = [];
+      notify();
+    },
+  };
+})();
+
+/* ─────────────────────────────────────────────────────────────────────────
+   3. LÓGICA DE NEGÓCIO — funções puras, sem efeitos colaterais, sem DOM
+   ───────────────────────────────────────────────────────────────────────── */
+
+const formatBRL = (cents) =>
+  (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+const parseCents = (rawValue) =>
+  Math.round(parseFloat(rawValue) * 100);
+
+/** Algoritmo guloso de troco. Opera 100% em centavos (inteiros). */
+const calcChange = (totalCents, receivedCents) => {
+  let remainder = receivedCents - totalCents;
+  return DENOMINATIONS.reduce((acc, { cents, label }) => {
+    if (remainder >= cents) {
+      acc.push({ qty: Math.floor(remainder / cents), label });
+      remainder %= cents;
+    }
+    return acc;
+  }, []);
+};
+
+/* ─────────────────────────────────────────────────────────────────────────
+   4. DOM HELPERS
+   ───────────────────────────────────────────────────────────────────────── */
+
+const el = (id) => document.getElementById(id);
+
+/**
+ * Cria elemento com atributos e filhos sem usar innerHTML — sem risco de XSS.
+ * textContent é definido via attrs e trata automaticamente caracteres especiais.
+ */
+const createElement = (tag, attrs = {}, children = []) => {
+  const node = document.createElement(tag);
+  Object.entries(attrs).forEach(([k, v]) => {
+    if (k === 'className')    node.className   = v;
+    else if (k === 'textContent') node.textContent = v;
+    else node.setAttribute(k, v);
+  });
+  children.forEach(child =>
+    node.appendChild(typeof child === 'string'
+      ? document.createTextNode(child)
+      : child)
+  );
+  return node;
+};
+
+/* ─────────────────────────────────────────────────────────────────────────
+   5. COMPONENTES DE RENDERIZAÇÃO — cada um responsável por uma só coisa
+   ───────────────────────────────────────────────────────────────────────── */
+
+const Catalog = {
+  /** Monta o catálogo uma única vez. Event delegation cuida dos cliques. */
+  init() {
+    const grid = el('catalog-grid');
+
+    PRODUCTS.forEach(product => {
+      const card = createElement('div', {
+        className:       'product-card',
+        role:            'listitem',
+        'aria-label':   `${product.name}, ${formatBRL(product.priceCents)}`,
+        'data-product-id': product.id,
+        tabindex:        '0',
+      });
+      card.appendChild(createElement('span', { className: 'product-icon',  'aria-hidden': 'true', textContent: product.icon }));
+      card.appendChild(createElement('span', { className: 'product-name',  textContent: product.name }));
+      card.appendChild(createElement('span', { className: 'product-price', textContent: formatBRL(product.priceCents) }));
+      grid.appendChild(card);
+    });
+
+    // Um único listener para todos os cards (event delegation)
+    grid.addEventListener('click', (e) => {
+      const card = e.target.closest('[data-product-id]');
+      if (card) store.addItem(Number(card.dataset.productId));
+    });
+
+    // Acessibilidade: ativa o card com Enter ou Espaço
+    grid.addEventListener('keydown', (e) => {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      const card = e.target.closest('[data-product-id]');
+      if (card) { e.preventDefault(); store.addItem(Number(card.dataset.productId)); }
+    });
+  },
+};
+
+const CartView = {
+  /** Chamado pelo store.subscribe sempre que o carrinho muda. */
+  update() {
+    const cart       = store.getCart();
+    const totalCents = store.getTotalCents();
+
+    el('cart-badge').textContent = cart.length === 1 ? '1 item' : `${cart.length} itens`;
+    el('cart-total').textContent = formatBRL(totalCents);
+    el('pay-btn').disabled       = cart.length === 0;
+
+    this._renderItems(cart);
+  },
+
+  _renderItems(cart) {
+    const container = el('cart-items');
+    container.innerHTML = '';
+
+    if (cart.length === 0) {
+      container.appendChild(
+        createElement('p', { className: 'cart-empty', textContent: 'Nenhum item adicionado' })
+      );
+      return;
+    }
+
+    // DocumentFragment: insere todos os nós em uma única operação de reflow
+    const fragment = document.createDocumentFragment();
+
+    cart.forEach(({ product, cartItemId }) => {
+      const item = createElement('div', { className: 'cart-item', role: 'listitem' });
+
+      const left = createElement('div', { className: 'cart-item-left' });
+      left.appendChild(createElement('span', { className: 'cart-item-icon', 'aria-hidden': 'true', textContent: product.icon }));
+
+      const info = createElement('div');
+      info.appendChild(createElement('p', { className: 'cart-item-name',  textContent: product.name }));
+      info.appendChild(createElement('p', { className: 'cart-item-price', textContent: formatBRL(product.priceCents) }));
+      left.appendChild(info);
+
+      const removeBtn = createElement('button', {
+        className:         'cart-item-remove',
+        'aria-label':     `Remover ${product.name} do carrinho`,
+        'data-cart-item-id': cartItemId,
+        textContent:       '✕',
+      });
+
+      item.appendChild(left);
+      item.appendChild(removeBtn);
+      fragment.appendChild(item);
+    });
+
+    container.appendChild(fragment);
+  },
+};
+
+const Modal = {
+  _isOpen: false,
+
+  open() {
+    el('modal-total').textContent  = formatBRL(store.getTotalCents());
+    el('received-input').value     = '';
+    el('error-msg').textContent    = '';
+    el('btn-confirm').disabled     = true;
+    el('view-checkout').hidden     = false;
+    el('view-receipt').hidden      = true;
+    el('modal-overlay').classList.add('open');
+    el('modal-overlay').removeAttribute('aria-hidden');
+    this._isOpen = true;
+    setTimeout(() => el('received-input').focus(), 60);
+  },
+
+  close() {
+    el('modal-overlay').classList.remove('open');
+    el('modal-overlay').setAttribute('aria-hidden', 'true');
+    this._isOpen = false;
+    el('pay-btn').focus();
+  },
+
+  validateInput() {
+    const receivedCents = parseCents(el('received-input').value);
+    const totalCents    = store.getTotalCents();
+    const isShort       = !isNaN(receivedCents) && receivedCents < totalCents;
+
+    el('error-msg').textContent  = isShort
+      ? `Valor insuficiente. Faltam ${formatBRL(totalCents - receivedCents)}.`
+      : '';
+    el('btn-confirm').disabled   = isShort || isNaN(receivedCents) || receivedCents <= 0;
+  },
+
+  processPayment() {
+    const receivedCents = parseCents(el('received-input').value);
+    const totalCents    = store.getTotalCents();
+    if (isNaN(receivedCents) || receivedCents < totalCents) return;
+
+    const changeCents = receivedCents - totalCents;
+    const breakdown   = calcChange(totalCents, receivedCents);
+
+    ReceiptView.render({ totalCents, receivedCents, changeCents, breakdown });
+    el('view-checkout').hidden = true;
+    el('view-receipt').hidden  = false;
+  },
+};
+
+const ReceiptView = {
+  render({ totalCents, receivedCents, changeCents, breakdown }) {
+    const container = el('receipt-content');
+    container.innerHTML = '';
+
+    const fragment = document.createDocumentFragment();
+
+    const addRow = (label, valueCents, rowClass = 'receipt-row') => {
+      const row = createElement('div', { className: rowClass });
+      row.appendChild(createElement('span', { className: 'rk', textContent: label }));
+      row.appendChild(createElement('span', { className: 'rv', textContent: formatBRL(valueCents) }));
+      fragment.appendChild(row);
+    };
+
+    addRow('Total',    totalCents);
+    addRow('Recebido', receivedCents);
+    fragment.appendChild(createElement('div', { className: 'receipt-divider' }));
+    addRow('Troco', changeCents, 'receipt-change-row');
+
+    if (breakdown.length > 0 && changeCents > 0) {
+      fragment.appendChild(createElement('p', { className: 'breakdown-title', textContent: 'Composição do troco' }));
+      breakdown.forEach(({ qty, label }) => {
+        const row = createElement('div', { className: 'breakdown-item' });
+        row.appendChild(createElement('span', { textContent: label }));
+        row.appendChild(createElement('span', { textContent: `${qty}×` }));
+        fragment.appendChild(row);
+      });
+    }
+
+    container.appendChild(fragment);
+  },
+};
+
+/* ─────────────────────────────────────────────────────────────────────────
+   6. EVENT LISTENERS — todos centralizados, zero handlers inline no HTML
+   ───────────────────────────────────────────────────────────────────────── */
+
+const bindEvents = () => {
+  // Carrinho: event delegation para todos os botões de remover
+  el('cart-items').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-cart-item-id]');
+    if (btn) store.removeItem(Number(btn.dataset.cartItemId));
+  });
+
+  el('pay-btn').addEventListener('click',     () => Modal.open());
+  el('btn-cancel').addEventListener('click',  () => Modal.close());
+  el('btn-confirm').addEventListener('click', () => Modal.processPayment());
+  el('received-input').addEventListener('input', () => Modal.validateInput());
+
+  el('btn-new-sale').addEventListener('click', () => {
+    store.clearCart();
+    Modal.close();
+  });
+
+  // Fechar modal ao clicar fora (apenas na tela de checkout)
+  el('modal-overlay').addEventListener('click', (e) => {
+    if (e.target === el('modal-overlay') && !el('view-checkout').hidden) {
+      Modal.close();
+    }
+  });
+
+  // Fechar modal com Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && Modal._isOpen && !el('view-checkout').hidden) {
+      Modal.close();
+    }
+  });
+};
+
+/* ─────────────────────────────────────────────────────────────────────────
+   7. BOOTSTRAP — ponto de entrada da aplicação
+   ───────────────────────────────────────────────────────────────────────── */
+
+const App = {
+  init() {
+    Catalog.init();
+    CartView.update();
+    bindEvents();
+    store.subscribe(() => CartView.update());
+  },
+};
+
+App.init();
+</script>
+</body>
+</html>
