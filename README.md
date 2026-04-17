@@ -65,19 +65,19 @@ supermercado.html
 
 ## Como Executar
 
-Abra o VsCode, abra um novo terminal e siga o passo a passo logo abaixo:
+Abra o VS Code, abra um novo terminal e siga o passo a passo logo abaixo:
 
 ```bash
 # Clone o repositório
 git clone https://github.com/nicwxzz/super-mercado-inteligente
 
-# Entre na pasta
+# Acesse a pasta do projeto
 cd super-mercado-inteligente
 
-# Abra o arquivo (ou dê dois cliques nele)
+# Depois, execute o arquivo HTML conforme o seu sistema operacional:
 
 Para Windows:
-open supermercado.html
+start supermercado.html
 
 Para macOS:
 open supermercado.html
