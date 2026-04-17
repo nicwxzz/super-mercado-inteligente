@@ -75,13 +75,14 @@ git clone https://github.com/nicwxzz/super-mercado-inteligente
 cd super-mercado-inteligente
 
 # Abra o arquivo (ou dê dois cliques nele)
-**Windows**
+
+Para Windows:
 open supermercado.html
 
-**macOS**
+Para macOS:
 open supermercado.html
 
-**Linux**
+Para Linux:
 xdg-open supermercado.html
 
 ```
