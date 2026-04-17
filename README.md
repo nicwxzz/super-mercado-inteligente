@@ -75,7 +75,6 @@ git clone https://github.com/nicwxzz/super-mercado-inteligente
 cd super-mercado-inteligente
 
 # Depois, execute o arquivo HTML conforme o seu sistema operacional:
-
 Para Windows:
 start supermercado.html
 
