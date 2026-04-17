@@ -72,10 +72,18 @@ Abra o VsCode, abra um novo terminal e siga o passo a passo logo abaixo:
 git clone https://github.com/nicwxzz/super-mercado-inteligente
 
 # Entre na pasta
-cd supermarket-system
+cd super-mercado-inteligente
 
 # Abra o arquivo (ou dê dois cliques nele)
+**Windows**
 open supermercado.html
+
+**macOS**
+open supermercado.html
+
+**Linux**
+xdg-open supermercado.html
+
 ```
 
 > Compatível com qualquer navegador moderno (Chrome, Firefox, Edge, Safari).
