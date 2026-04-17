@@ -65,7 +65,7 @@ supermercado.html
 
 ## Como Executar
 
-Nenhuma instalação necessária. Basta abrir o arquivo no navegador:
+Abra o VsCode, abra um novo terminal e siga o passo a passo logo abaixo:
 
 ```bash
 # Clone o repositório
